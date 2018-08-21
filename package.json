@@ -1,0 +1,39 @@
+{
+  "name": "frameextractor",
+  "version": "0.0.1",
+  "description": "tool for documents markup",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "npm run build && node server.js",
+    "build": "./node_modules/.bin/webpack"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/FastLawDev/frameextractor.git"
+  },
+  "author": "bavadim",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/FastLawDev/frameextractor/issues"
+  },
+  "homepage": "https://github.com/FastLawDev/frameextractor#readme",
+  "dependencies": {
+    "express": "^4.16.3",
+    "react": "^16.4.2",
+    "react-dom": "^16.4.2",
+    "typescript": "^3.0.1"
+  },
+  "devDependencies": {
+    "@types/react": "^16.4.11",
+    "@types/react-dom": "^16.0.7",
+    "@types/react-redux": "^6.0.6",
+    "html-webpack-plugin": "^3.2.0",
+    "source-map-loader": "^0.2.4",
+    "ts-loader": "^4.5.0",
+    "webpack": "^4.16.5",
+    "webpack-cli": "^3.1.0",
+    "webpack-dev-middleware": "^3.1.3",
+    "webpack-hot-middleware": "^2.22.3"
+  }
+}
