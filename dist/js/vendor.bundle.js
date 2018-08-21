@@ -64,7 +64,7 @@
 /******/
 /******/ 	var hotApplyOnUpdate = true;
 /******/ 	// eslint-disable-next-line no-unused-vars
-/******/ 	var hotCurrentHash = "85fa39a20c7126b45bc9";
+/******/ 	var hotCurrentHash = "4ca3268304e97e6d4a85";
 /******/ 	var hotRequestTimeout = 10000;
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule;
@@ -163,7 +163,7 @@
 /******/ 			// Module API
 /******/ 			active: true,
 /******/ 			accept: function(dep, callback) {
-/******/ 				if (typeof dep === "undefined") hot._selfAccepted = true;
+/******/ 				if (dep === undefined) hot._selfAccepted = true;
 /******/ 				else if (typeof dep === "function") hot._selfAccepted = dep;
 /******/ 				else if (typeof dep === "object")
 /******/ 					for (var i = 0; i < dep.length; i++)
@@ -171,7 +171,7 @@
 /******/ 				else hot._acceptedDependencies[dep] = callback || function() {};
 /******/ 			},
 /******/ 			decline: function(dep) {
-/******/ 				if (typeof dep === "undefined") hot._selfDeclined = true;
+/******/ 				if (dep === undefined) hot._selfDeclined = true;
 /******/ 				else if (typeof dep === "object")
 /******/ 					for (var i = 0; i < dep.length; i++)
 /******/ 						hot._declinedDependencies[dep[i]] = true;

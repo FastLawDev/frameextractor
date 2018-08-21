@@ -1,10 +1,19 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { Workplace } from './components/Workplace';
+import { Provider } from 'react-redux'
+import { createBrowserHistory } from 'history'
+import DocumentView from './containers/documentView';
+import configureStore from './store'
 declare let module: any
 
-ReactDOM.render(<Workplace compiler="Typescript" framework="React" bundler="Webpack" />,
-document.getElementById('root'));
+const history = createBrowserHistory()
+const store = configureStore(history)
+
+ReactDOM.render(
+  <Provider store={store}>
+    <DocumentView />
+  </Provider>
+  , document.getElementById('root'));
 
 if (module.hot) {
    module.hot.accept();

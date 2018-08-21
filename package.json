@@ -19,9 +19,18 @@
   },
   "homepage": "https://github.com/FastLawDev/frameextractor#readme",
   "dependencies": {
+    "@types/history": "^4.7.0",
+    "@types/redux-devtools-extension": "^2.13.2",
+    "connected-react-router": "^4.4.1",
     "express": "^4.16.3",
+    "npm": "^6.4.0",
     "react": "^16.4.2",
     "react-dom": "^16.4.2",
+    "react-redux": "^5.0.7",
+    "react-router": "^4.3.1",
+    "redux": "^4.0.0",
+    "redux-devtools-extension": "^2.13.5",
+    "redux-history": "^1.0.2",
     "typescript": "^3.0.1"
   },
   "devDependencies": {

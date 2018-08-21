@@ -1,17 +1,14 @@
 import { Reducer } from 'redux';
-import { CurrentDocument, DocumentActions } from './types';
+import { CurrentDocument, DocumentActions, initialState } from './types';
 
-const initialState: CurrentDocument = {
-        text: [],
-        selectedTokens: new Set()
-};
-
-const reducer: Reducer<ChatState> = (state: ChatState = initialState, action) => {
-        switch ((action as ChatActions).type) {
+const reducer: Reducer<CurrentDocument> = (state: CurrentDocument = initialState, action) => {
+        switch ((action as DocumentActions).type) {
                 case '@@document/TOKEN_CLICKED':
-                        return { ...state, selectedTokens: state.selectedTokens.add(action.index) };
+                        var newTokens = state.selectedTokens
+                        newTokens.push(action.index)
+                        return { ...state, selectedTokens: newTokens };
                 case '@@document/DOCUMENT_LOADED':
-                        return { selectedTokens: new Set(), text: action.text };
+                        return { selectedTokens: [], tokens: action.tokens };
                 default:
                         return state;
         }

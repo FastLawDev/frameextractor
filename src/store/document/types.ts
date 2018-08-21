@@ -1,6 +1,6 @@
 export interface CurrentDocument {
-        text: string[];
-        selectedTokens: Set<number>;
+        tokens: string[];
+        selectedTokens: number[];
 }
 
 import { Action } from 'redux';
@@ -15,8 +15,13 @@ export interface TokenClickedAction extends Action {
 export interface DocumentLoadedAction extends Action {
         type: '@@document/DOCUMENT_LOADED';
         payload: {
-                text: string[];
+                tokens: string[];
         };
 }
+
+export const initialState: CurrentDocument = {
+        tokens: [],
+        selectedTokens: []
+};
 
 export type DocumentActions = TokenClickedAction | DocumentLoadedAction;
