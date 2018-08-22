@@ -1,8 +1,7 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
-import { CurrentDocument } from '../store/document/types';
-import { ApplicationState } from '../store';
+import { ApplicationState } from 'store';
 
 // Standard component props
 interface DocumentViewProps {
@@ -10,20 +9,22 @@ interface DocumentViewProps {
 }
 
 // Create an intersection type of the component props and our state.
-type AllProps = DocumentViewProps & CurrentDocument;
+type AllProps = DocumentViewProps & { tokens: string[] };
 
 // You can now safely use the mapped state as our component props!
-const DocumentView: React.SFC<AllProps> = ({ tokens, selectedTokens }) => (
+const DocumentView: React.SFC<AllProps> = ({ tokens }) => (
   <div>
-          olololo
-        {tokens && tokens.map((m: string) => (
-          <span>{m}</span>
-        ))}
+        olololo
+        <ul>
+          {tokens && tokens.map((m: string) => (
+            <li key={m}>{m}</li>
+          ))}
+        </ul>
   </div>
 );
 
 const mapStateToProps = (state: ApplicationState): AllProps => { 
-  return { tokens: state.doc.tokens, selectedTokens: [] }
+  return { tokens: state.doc.tokens }
 }
 
 // Now let's connect our component!

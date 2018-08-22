@@ -5,10 +5,10 @@ const reducer: Reducer<CurrentDocument> = (state: CurrentDocument = initialState
         switch ((action as DocumentActions).type) {
                 case '@@document/TOKEN_CLICKED':
                         var newTokens = state.selectedTokens
-                        newTokens.push(action.index)
+                        newTokens.push(action.payload.index)
                         return { ...state, selectedTokens: newTokens };
                 case '@@document/DOCUMENT_LOADED':
-                        return { selectedTokens: [], tokens: action.tokens };
+                        return { selectedTokens: [], tokens: action.payload.tokens };
                 default:
                         return state;
         }
