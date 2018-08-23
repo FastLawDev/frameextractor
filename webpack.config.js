@@ -1,6 +1,22 @@
 const path = require('path'),
   webpack = require('webpack'),
   HtmlWebpackPlugin = require('html-webpack-plugin');
+  MiniCssExtractPlugin = require("mini-css-extract-plugin");
+
+function getPlugin() {
+    if(process.env.NODE_ENV === 'production') {
+       return [
+         new HtmlWebpackPlugin({ template: path.resolve(__dirname, 'src', 'index.html') }),
+         new webpack.optimize.UglifyJsPlugin(),
+         new MiniCssExtractPlugin()
+        ];
+    } else {
+        return [
+          new HtmlWebpackPlugin({ template: path.resolve(__dirname, 'src', 'index.html') }),
+          new webpack.HotModuleReplacementPlugin()
+        ];
+    }
+}
 
 module.exports = {
   entry: {
@@ -22,15 +38,25 @@ module.exports = {
   module: {
     rules: [
       {
+        test: /\.scss$/,
+        use: [
+          'style-loader',
+          {
+            loader: 'css-loader',
+            options: { 
+              minimize: true
+            }
+          },
+          'sass-loader?sourceMap'
+        ]
+      },
+      {
         test: /\.(ts|tsx)$/,
         loader: 'ts-loader'
       },
       { enforce: "pre", test: /\.js$/, loader: "source-map-loader" }
     ]
   },
-  plugins: [
-    new HtmlWebpackPlugin({ template: path.resolve(__dirname, 'src', 'index.html') }),
-    new webpack.HotModuleReplacementPlugin()
-  ],
+  plugins: getPlugin(),
   mode: "development"
 }

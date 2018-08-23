@@ -8,10 +8,11 @@ export const clickOnToken: ActionCreator<TokenClickedAction> = (index: number) =
         }
 });
 
-export const newDocumentToken: ActionCreator<DocumentLoadedAction> = (tokens: string[]) => ({
+export const newDocumentToken: ActionCreator<DocumentLoadedAction> = (tokens: string[], html: string) => ({
         type: '@@document/DOCUMENT_LOADED',
         payload: {
-                tokens
+          tokens,
+          html
         }
 });
 

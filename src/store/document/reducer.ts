@@ -8,7 +8,7 @@ const reducer: Reducer<CurrentDocument> = (state: CurrentDocument = initialState
                         newTokens.push(action.payload.index)
                         return { ...state, selectedTokens: newTokens };
                 case '@@document/DOCUMENT_LOADED':
-                        return { selectedTokens: [], tokens: action.payload.tokens };
+                        return { selectedTokens: [], tokens: action.payload.tokens, html: action.payload.html };
                 default:
                         return state;
         }
