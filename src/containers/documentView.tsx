@@ -16,15 +16,25 @@ type AllProps = DocumentViewProps & { tokens: string[], html: string };
 const DocumentView: React.SFC<AllProps> = ({ tokens, html }) => (
   <div className="documentView">
     <div className="paper A4">
-          <div dangerouslySetInnerHTML={{__html: html}} />
-          <ul>
-            {tokens && tokens.map((m: string) => (
-              <li key={m}>{m}</li>
-            ))}
-          </ul>
+        <div className="pageContent">
+                {wrap2spans(html, tokens)}
+        </div>
     </div>
   </div>
 );
+
+function wrap2spans(html: string, tokens: string[]): JSX.Element[] {
+        var buf: string = html
+        var res: JSX.Element[] = []
+        tokens.forEach((item: string, index: number) => {
+                const htmlOffset = buf.indexOf(item)
+                res.push(<span key={"o-" + htmlOffset} dangerouslySetInnerHTML={{__html: buf.substring(0, htmlOffset - 1)}} />)
+                const id = "" + index
+                res.push(<span id={id} key={id}>{item}</span>)
+                buf = buf.substring(htmlOffset + item.length)
+        })
+        return res
+}
 
 const mapStateToProps = (state: ApplicationState): AllProps => { 
   return { tokens: state.doc.tokens, html: state.doc.html }

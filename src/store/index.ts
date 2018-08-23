@@ -20,6 +20,8 @@ export const reducers: Reducer<ApplicationState> = combineReducers<ApplicationSt
   doc: documentReducer
 });
 
+export type DWStore = Store<ApplicationState, DocumentActions>
+
 export default function configureStore(
   history: History
 ): Store<ApplicationState, DocumentActions> {
