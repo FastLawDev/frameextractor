@@ -6,7 +6,7 @@ import { History } from 'history';
 // Import your state types and reducers here.
 import { CurrentDocument } from './document/types';
 import documentReducer from './document/reducer';
-import { DocumentActions, initialState } from './document/types';
+import { DocumentActions, SelectedItem, TypeTag, initialState } from './document/types';
 
 // The top-level state object
 export interface ApplicationState {

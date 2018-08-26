@@ -2,43 +2,64 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 import { ApplicationState } from 'store';
+import { SelectedItem, CurrentDocument, DocumentActions } from 'store/document/types'
+import {TextAnnotator, TokenAnnotator} from 'react-text-annotate'
 import './documentView.scss';
 
 // Standard component props
-interface DocumentViewProps {
-  // write your props here
+interface DispatchProps {
+        type: string,
+        handler: (i: SelectedItem) => void
 }
 
 // Create an intersection type of the component props and our state.
-type AllProps = DocumentViewProps & { tokens: string[], html: string };
+//type AllProps = DocumentViewProps & { tokens: string[], selectedTokens: SelectedItem[], tag: string };
+
+const TAG_COLORS: { [id: string]: string } = {
+  "ORG": '#00ffa2',
+  "PERSON": '#84d2ff',
+}
 
 // You can now safely use the mapped state as our component props!
-const DocumentView: React.SFC<AllProps> = ({ tokens, html }) => (
+const DocumentView: React.SFC<CurrentDocument & DispatchProps> = ({ tokens, selectedTokens, currentTag, handler }) => (
   <div className="documentView">
+        {alert("!!!")}
     <div className="paper A4">
-        <div className="pageContent">
-                {wrap2spans(html, tokens)}
-        </div>
+        <TokenAnnotator
+              style={{
+                fontFamily: 'IBM Plex Sans',
+                maxWidth: 500,
+                lineHeight: 1.5,
+              }}
+              tokens={tokens}
+              value={selectedTokens}
+              onChange={handler}
+              getSpan={span => ({
+                ...span,
+                tag: currentTag,
+                color: TAG_COLORS[currentTag],
+              })}
+              //renderMark={props => (
+              //  <mark
+              // key='1'//{props.key}
+                  //onClick={() => props.onClick({start: props.start, end: props.end})}
+              // >
+              //   "erer" [{currentTag}]
+              //  </mark>
+              //)}
+        />
     </div>
   </div>
 );
 
-function wrap2spans(html: string, tokens: string[]): JSX.Element[] {
-        var buf: string = html
-        var res: JSX.Element[] = []
-        tokens.forEach((item: string, index: number) => {
-                const htmlOffset = buf.indexOf(item)
-                res.push(<span key={"o-" + htmlOffset} dangerouslySetInnerHTML={{__html: buf.substring(0, htmlOffset - 1)}} />)
-                const id = "" + index
-                res.push(<span id={id} key={id}>{item}</span>)
-                buf = buf.substring(htmlOffset + item.length)
-        })
-        return res
+const mapStateToProps = (state: ApplicationState): CurrentDocument => { 
+        return { tokens: state.doc.tokens, selectedTokens: state.doc.selectedTokens, currentTag: state.doc.currentTag }
 }
 
-const mapStateToProps = (state: ApplicationState): AllProps => { 
-  return { tokens: state.doc.tokens, html: state.doc.html }
-}
+const mapDispatchToProps = (dispatch: Dispatch<DocumentActions>): DispatchProps => ({
+        type: '@@document/TOKEN_CLICKED',
+        handler: (value: SelectedItem) => dispatch({ type: '@@document/TOKEN_CLICKED', payload: { selection: value }}),
+});
 
 // Now let's connect our component!
-export default connect(mapStateToProps)(DocumentView);
+export default connect(mapStateToProps, mapDispatchToProps)(DocumentView);

@@ -3,7 +3,7 @@ import { DWStore } from 'store'
 
 export default function run(store: DWStore) {
         const converter = new showdown.Converter()
-        store.dispatch({ type: '@@document/DOCUMENT_LOADED', payload: { tokens: tokens, html: converter.makeHtml(doc) } })
+        store.dispatch({ type: '@@document/DOCUMENT_LOADED', payload: { tokens: tokens, html: converter.makeHtml(html) } })
 }
 
 const html = `
