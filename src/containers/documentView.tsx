@@ -2,53 +2,59 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 import { ApplicationState } from 'store';
-import { SelectedItem, CurrentDocument, DocumentActions } from 'store/document/types'
-import {TextAnnotator, TokenAnnotator} from 'react-text-annotate'
+import { SelectedItem, CurrentDocument, DocumentActions, TypeTag } from 'store/document/types';
+import {TextAnnotator, TokenAnnotator} from 'react-text-annotate';
 import './documentView.scss';
 
 // Standard component props
 interface DispatchProps {
         type: string,
-        handler: (i: SelectedItem) => void
+        handler: (parNum: number, i: SelectedItem[]) => void
 }
 
-// Create an intersection type of the component props and our state.
-//type AllProps = DocumentViewProps & { tokens: string[], selectedTokens: SelectedItem[], tag: string };
-
-const TAG_COLORS: { [id: string]: string } = {
-  "ORG": '#00ffa2',
-  "PERSON": '#84d2ff',
+function randomColor(): string {
+        const x=Math.round(0xffffff * Math.random()).toString(16);
+        const y=(6-x.length);
+        const z='000000';
+        const z1 = z.substring(0,y);
+        const color= '#' + z1 + x;
+        return color;
 }
+
+var TAG_COLORS: { [id: string]: string } = {} 
+Object.keys(TypeTag).filter(k => typeof TypeTag[k as any] === "string")
+        .forEach(key => {
+                TAG_COLORS[key] = randomColor()
+        })
 
 // You can now safely use the mapped state as our component props!
 const DocumentView: React.SFC<CurrentDocument & DispatchProps> = ({ tokens, selectedTokens, currentTag, handler }) => (
   <div className="documentView">
-        {alert("!!!")}
-    <div className="paper A4">
-        <TokenAnnotator
-              style={{
-                fontFamily: 'IBM Plex Sans',
-                maxWidth: 500,
-                lineHeight: 1.5,
-              }}
-              tokens={tokens}
-              value={selectedTokens}
-              onChange={handler}
-              getSpan={span => ({
-                ...span,
-                tag: currentTag,
-                color: TAG_COLORS[currentTag],
-              })}
-              //renderMark={props => (
-              //  <mark
-              // key='1'//{props.key}
-                  //onClick={() => props.onClick({start: props.start, end: props.end})}
-              // >
-              //   "erer" [{currentTag}]
-              //  </mark>
-              //)}
-        />
-    </div>
+        <div className="paper A4">
+                {tokens.map((t, i) => 
+                    <div key={i}>
+                            <TokenAnnotator
+                                    style={{ }}
+                                    tokens={t}
+                                    value={selectedTokens.filter((si: SelectedItem) => (si.parNum == i))}
+                                    onChange={handler.bind(/*this*/undefined, i)}
+                                    getSpan={span => ({
+                                            ...span,
+                                            tag: currentTag,
+                                            color: TAG_COLORS[currentTag],
+                                    })}
+                                    //renderMark={props => (
+                                    //  <mark
+                                    // key='1'//{props.key}
+                                    //onClick={() => props.onClick({start: props.start, end: props.end})}
+                                    // >
+                                    //   "erer" [{currentTag}]
+                                    //  </mark>
+                                    //)}
+                            />
+                    </div>
+                )}
+            </div>
   </div>
 );
 
@@ -58,7 +64,10 @@ const mapStateToProps = (state: ApplicationState): CurrentDocument => {
 
 const mapDispatchToProps = (dispatch: Dispatch<DocumentActions>): DispatchProps => ({
         type: '@@document/TOKEN_CLICKED',
-        handler: (value: SelectedItem) => dispatch({ type: '@@document/TOKEN_CLICKED', payload: { selection: value }}),
+        handler: (parNum: number, value: SelectedItem[]) => {
+                const res = value.map(si => ({ start: si.start, end: si.end, tag: si.tag, parNum: parNum }))
+                dispatch({ type: '@@document/TOKEN_CLICKED', payload: { selection: res }});
+        },
 });
 
 // Now let's connect our component!
