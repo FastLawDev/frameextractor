@@ -2,6 +2,7 @@ export class SelectedItem {
         start: number;
         end: number;
         tag: string;
+        color: string;
         parNum: number;
 }
 
@@ -25,6 +26,7 @@ export interface TokenClickedAction extends Action {
   type: '@@document/TOKEN_CLICKED';
   payload: {
           selection: SelectedItem[];
+          parNum: number;
   };
 }
 

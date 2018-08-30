@@ -1,10 +1,11 @@
 import { ActionCreator } from 'redux';
 import { DocumentLoadedAction, TokenClickedAction, TagChangedAction, SelectedItem, TypeTag } from './types';
 
-export const clickOnToken: ActionCreator<TokenClickedAction> = (selection: SelectedItem[]) => ({
+export const clickOnToken: ActionCreator<TokenClickedAction> = (selection: SelectedItem[], parNum: number) => ({
         type: '@@document/TOKEN_CLICKED',
         payload: {
-                selection
+                selection,
+                parNum
         }
 });
 

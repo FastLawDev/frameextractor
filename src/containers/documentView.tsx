@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 import { ApplicationState } from 'store';
 import { SelectedItem, CurrentDocument, DocumentActions, TypeTag } from 'store/document/types';
-import {TextAnnotator, TokenAnnotator} from 'react-text-annotate';
+import {TextAnnotator, TokenAnnotator} from 'components/annotator';
 import './documentView.scss';
 
 // Standard component props
@@ -32,27 +32,19 @@ const DocumentView: React.SFC<CurrentDocument & DispatchProps> = ({ tokens, sele
   <div className="documentView">
         <div className="paper A4">
                 {tokens.map((t, i) => 
-                    <div key={i}>
-                            <TokenAnnotator
-                                    style={{ }}
-                                    tokens={t}
-                                    value={selectedTokens.filter((si: SelectedItem) => (si.parNum == i))}
-                                    onChange={handler.bind(/*this*/undefined, i)}
-                                    getSpan={span => ({
-                                            ...span,
-                                            tag: currentTag,
-                                            color: TAG_COLORS[currentTag],
-                                    })}
-                                    //renderMark={props => (
-                                    //  <mark
-                                    // key='1'//{props.key}
-                                    //onClick={() => props.onClick({start: props.start, end: props.end})}
-                                    // >
-                                    //   "erer" [{currentTag}]
-                                    //  </mark>
-                                    //)}
-                            />
-                    </div>
+                    <TokenAnnotator
+                            style={{ }}
+                            pageNum={i}
+                            key={"" + i}
+                            tokens={t}
+                            value={selectedTokens.filter((si: SelectedItem) => (si.parNum == i))}
+                            onChange={handler}
+                            getSpan={span => ({
+                                    ...span,
+                                    tag: currentTag,
+                                    color: TAG_COLORS[currentTag],
+                            })}
+                    />
                 )}
             </div>
   </div>
@@ -65,8 +57,8 @@ const mapStateToProps = (state: ApplicationState): CurrentDocument => {
 const mapDispatchToProps = (dispatch: Dispatch<DocumentActions>): DispatchProps => ({
         type: '@@document/TOKEN_CLICKED',
         handler: (parNum: number, value: SelectedItem[]) => {
-                const res = value.map(si => ({ start: si.start, end: si.end, tag: si.tag, parNum: parNum }))
-                dispatch({ type: '@@document/TOKEN_CLICKED', payload: { selection: res }});
+                const res = value.map(si => ({ ...si, parNum }))
+                dispatch({ type: '@@document/TOKEN_CLICKED', payload: { selection: res, parNum }});
         },
 });
 
