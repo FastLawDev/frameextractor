@@ -1,44 +1,188 @@
-import { createStore, applyMiddleware, Store, combineReducers, Reducer } from 'redux';
+import { ActionCreator, Action, Reducer, Store, createStore, applyMiddleware } from 'redux';
 import { connectRouter, routerMiddleware } from 'connected-react-router'
 import { composeWithDevTools } from 'redux-devtools-extension';
 import { History } from 'history';
 
-// Import your state types and reducers here.
-import { CurrentDocument } from './document/types';
-import documentReducer from './document/reducer';
-import { DocumentActions, SelectedItem, TypeTag, initialState } from './document/types';
-
-// The top-level state object
-export interface ApplicationState {
-  doc: CurrentDocument;
+export interface Interval {
+        start: number;
+        end: number;
 }
 
-// Whenever an action is dispatched, Redux will update each top-level application state property
-// using the reducer with the matching name. It's important that the names match exactly, and that
-// the reducer acts on the corresponding ApplicationState property type.
-export const reducers: Reducer<ApplicationState> = combineReducers<ApplicationState>({
-  doc: documentReducer
+export enum SlotType {
+        ORG = "ORG",
+        PERSON = "PERSON",
+        ADDR = "ADDR",
+        EVENT = "EVENT",
+        ACTION = "ACTION"
+}
+
+export class SelectedItem {
+        tag: string;
+        color: string;
+
+        value: Interval;
+}
+
+export class Slot {
+        name: string;
+        instructions: string;
+        type: SlotType;
+        value: Interval?;
+
+        constructor(name: string, instructions: string, type: SlotType) {
+                this.name = name;
+                this.instructions = instructions;
+                this.type = type;
+                this.value = null;
+        }
+}
+
+export class Frame {
+        name: string;
+        slots: Set<Slot>;
+
+        constructor(name: string, slots: Set<Slot>) {
+                this.name = name;
+                this.slots = slots;
+        }
+
+        freeSlots(): Set<Slot> {
+                return slots.filter((s: Slot) => (s.value == null))
+        }
+}
+
+class NullFrame extends Frame {
+        constructor() {
+                this.name = "Больше задач нет!";
+                this.slots = [];
+        }
+}
+
+const nullFrame = new NullFrame();
+
+export class Document { 
+        private document: string[];
+        private emptyFrames: Frame[];
+        private filledFrmaes: Frame[];
+
+        constructor(document: string, frames: Frame[]) {
+                this.document = document;
+                this.emptyFrames = frames;
+                this.filledFrames = [];
+        }
+
+        private currentFrame(): Frame {
+                if (this.emptyFrames.length > 0) {
+                        return this.emptyFrames[0];
+                } else {
+                        return nullFrame;
+                }
+        }
+
+        currentSlot(): Slot? {
+                var frame = this.currentFrame();
+                var slot = frame.slots.find((s: Slot) => (s.value == null))
+                if (!slot && this.emptyFrames.length > 0) {
+                        this.filledFrames.append(this.emptyFrames.shift());
+                        return currentSlot();
+                }
+                return slot;
+        }
+
+        frame(): string {
+                return this.currentFrame.name;
+        }
+
+        saveSlot(selected: SelectedItem[]) {
+                const s = this.currentSlot()
+                if (s) {
+                        const slots = selected.filter((si: SelectedItem) => (si.tag == s.type)).map((si: SelectedItem) => ({...s, value: si.value}));
+                        const filledNames = new Set<string>(slots.map( (s: Slot) => s.name))
+                        const frame = this.currentFrame
+                        frame.slots = frame.slots.filter((s: Slot) => ( !filledNames.has(s.name) )).concat(slots)
+                }
+        }
+}
+
+export class State {
+        document: Document;
+        selected: SelectedItem[];
+
+        constructor(document: Document) {
+                this.document = document;
+                this.selected = [];
+        }
+
+        select(selected: SelectedItem[]): State {
+                return new State(this.document, selected);
+        }
+
+        save(): State {
+                this.document.saveSlot(this.selected)
+                return new State(this.document)
+        }
+}
+
+const initialState: State = new State(new Document("EMPTY", []));
+
+interface TokenClickedAction extends Action {
+  type: '@@document/TOKEN_CLICKED';
+  selection: SelectedItem[];
+}
+
+interface DocumentLoadedAction extends Action {
+  type: '@@document/DOCUMENT_LOADED';
+  document: Document;
+}
+
+interface SlotFilledAction extends Action {
+  type: '@@document/SLOT_FILLED';
+}
+
+type DocumentActions = TokenClickedAction | DocumentLoadedAction | TypeChangedAction | SlotFilledAction;
+
+const clickOnToken: ActionCreator<TokenClickedAction> = (selection: SelectedItem[]) => ({
+        type: '@@document/TOKEN_CLICKED',
+        selection: selection
+
 });
 
-export type DWStore = Store<ApplicationState, DocumentActions>
+const newDocumentToken: ActionCreator<DocumentLoadedAction> = (document: Document) => ({
+        type: '@@document/DOCUMENT_LOADED',
+        document: document
+        
+});
 
-export default function configureStore(
-  history: History
-): Store<ApplicationState, DocumentActions> {
-  // create the composing function for our middlewares
-  const composeEnhancers = composeWithDevTools({});
+const slotFilledChanged: ActionCreator<SlotFilledAction> = (tag: TypeTag) => ({
+        type: '@@document/SLOT_FILLED'
+});
 
-  const initialAppState: ApplicationState = {
-    doc: initialState
-  }
+const reducer: Reducer<CurrentDocument> = (state: CurrentDocument = initialState, action) => {
+        switch ((action as DocumentActions).type) {
+                case '@@document/TOKEN_CLICKED':
+                        return state.select(action.selection);
+                case '@@document/DOCUMENT_LOADED':
+                        return new State(action.document);
+                case '@@document/SLOT_FILLED':
+                        return state.save();
+                default:
+                        console.warn('unhandled event: ' + action)
+                        return state;
+        }
+};
 
-  // We'll create our store with the combined reducers and the initial Redux state that
-  // we'll be passing from our entry point.
-  return createStore<ApplicationState, DocumentActions, any, null>(
-    connectRouter(history)(reducers),
-    initialAppState,
-    composeEnhancers(applyMiddleware(
-      routerMiddleware(history),
-    ))
-  );
+export type DWStore = Store<State, DocumentActions>
+
+export default function configureStore(history: History): DWStore {
+        // create the composing function for our middlewares
+        const composeEnhancers = composeWithDevTools({});
+        const initialAppState: State = initialState;
+
+        return createStore<State, DocumentActions, any, null>(
+                connectRouter(history)(reducer),
+                initialAppState,
+                composeEnhancers(applyMiddleware(
+                        routerMiddleware(history),
+                ))
+        );
 }
