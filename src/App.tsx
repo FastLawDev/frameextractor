@@ -3,7 +3,7 @@ import * as ReactDOM from 'react-dom';
 import { Provider } from 'react-redux'
 import { createBrowserHistory } from 'history'
 import DocumentView from 'containers/documentView';
-import ToolPane from 'containers/toolPane';
+//import ToolPane from 'containers/toolPane';
 import configureStore from 'store'
 import 'bootstrap/scss/bootstrap.scss'
 import run from 'services'
@@ -28,7 +28,7 @@ ReactDOM.render(
                         <DocumentView />
                 </div>
                 <div className="col-md-4">
-                        <ToolPane />
+
                 </div>
         </div>
     </div>

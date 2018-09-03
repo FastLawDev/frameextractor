@@ -36,7 +36,7 @@
     "lodash": "^4.17.10",
     "lodash.sortby": "^4.7.0",
     "logstash": "^2.0.0",
-    "npm": "^6.4.0",
+    "npm": "^6.4.1",
     "react": "^16.4.2",
     "react-dom": "^16.4.2",
     "react-redux": "^5.0.7",
