@@ -35,19 +35,17 @@ Object.keys(SlotType).filter(k => typeof SlotType[k as any] === "string")
 // You can now safely use the mapped state as our component props!
 const DocumentView: React.SFC<Props & Handlers> = (props: (Props & Handlers)) => (
   <div className="documentView">
-        <div className="paper A4">
-                  <TokenAnnotator
-                          style={{ }}
-                          tokens={props.tokens}
-                          value={props.selected}
-                          onChange={props.handler}
-                          getSpan={span => ({
-                                  ...span,
-                                  tag: props.currentTag,
-                                  color: TAG_COLORS[currentTag],
-                          })}
-                  />
-            </div>
+          <TokenAnnotator
+                  style={{ }}
+                  tokens={props.tokens}
+                  value={props.selected}
+                  onChange={props.handler}
+                  getSpan={span => ({
+                          ...span,
+                          tag: props.currentTag,
+                          color: TAG_COLORS[props.currentTag],
+                  })}
+          />
   </div>
 );
 

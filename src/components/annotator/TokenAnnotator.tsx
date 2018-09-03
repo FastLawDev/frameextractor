@@ -96,10 +96,12 @@ class TokenAnnotator extends React.Component<TokenAnnotatorProps, {}> {
     const {tokens, value, style, renderMark} = this.props
     const splits = splitTokensWithOffsets(tokens, value)
     return (
-      <p style={style} ref={this.rootRef}>
+      <div style={style} ref={this.rootRef}>
         {splits.map(
-          (split: any, i: number) =>
-            split.mark ? (
+          (split: any, i: number) => {
+            const res: JSX.Element[] = []
+
+            res.push(split.mark ? (
               renderMark({
                 key: `${uuid()}`,
                 ...split,
@@ -107,9 +109,11 @@ class TokenAnnotator extends React.Component<TokenAnnotatorProps, {}> {
               })
             ) : (
               <Token key={split.i} {...split} />
-            )
+            ))
+            return res
+          }
         )}
-      </p>
+      </div>
     )
   }
 }

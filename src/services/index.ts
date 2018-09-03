@@ -1,9 +1,9 @@
 import * as showdown from 'showdown';
-import { DWStore } from 'store'
+import { DWStore, Document, Frame, Slot, SlotType } from 'store'
 
 export default function run(store: DWStore) {
         const converter = new showdown.Converter()
-        store.dispatch({ type: '@@document/DOCUMENT_LOADED', payload: { tokens: tokens } })
+        store.dispatch({ type: '@@document/DOCUMENT_LOADED', document: new Document(tokens, [new Frame('исполнитель', [new Slot('имя', 'выделете имя исполнителя', SlotType.PERSON), new Slot('адрес', 'выделете адрес проживания исполнителя', SlotType.ADDR)]), new Frame('предмет', [new Slot('наазвание', 'выделете суть предмета договора', SlotType.TOPIC_NAME)])]) })
 }
 
 const txt = `
@@ -581,4 +581,4 @@ __________________
 /_____________________________ /
 «_____» ______________ 20___ года
 `
-const tokens = txt.split('\n').map(s => s.split(' ').filter((s: string) => (s != ' ')))
+const tokens = txt.split(' ')
