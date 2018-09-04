@@ -7,7 +7,6 @@ function getPlugin() {
     if(process.env.NODE_ENV === 'production') {
        return [
          new HtmlWebpackPlugin({ template: path.resolve(__dirname, 'src', 'index.html') }),
-         new webpack.optimize.UglifyJsPlugin(),
          new MiniCssExtractPlugin()
         ];
     } else {
@@ -20,12 +19,12 @@ function getPlugin() {
 
 module.exports = {
   entry: {
-    app: ['./src/App.tsx', 'webpack-hot-middleware/client'],
+    app: ['./src/App.tsx'],
     vendor: ['react', 'react-dom']
   },
   output: {
     path: path.resolve(__dirname, 'dist'),
-    filename: 'js/[name].bundle.js'
+    filename: '[name].bundle.js'
   },
   devtool: 'source-map',
   resolve: {
@@ -58,5 +57,5 @@ module.exports = {
     ]
   },
   plugins: getPlugin(),
-  mode: "development"
+  mode: "production"
 }

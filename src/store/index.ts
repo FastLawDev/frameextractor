@@ -2,19 +2,11 @@ import { ActionCreator, Action, Reducer, Store, createStore, applyMiddleware } f
 import { connectRouter, routerMiddleware } from 'connected-react-router'
 import { composeWithDevTools } from 'redux-devtools-extension';
 import { History } from 'history';
+import { sendDocument } from 'services'
 
 export interface Interval {
   start: number;
   end: number;
-}
-
-export enum SlotType {
-  ORG = "ORG",
-  PERSON = "PERSON",
-  ADDR = "ADDR",
-  EVENT = "EVENT",
-  TOPIC_NAME = "TOPIC_NAME",
-  ACTION = "ACTION"
 }
 
 export class SelectedItem implements Interval {
@@ -23,33 +15,41 @@ export class SelectedItem implements Interval {
 
   start: number;
   end: number;
+  tokens: string[];
 }
 
 export class Slot {
   name: string;
   instructions: string;
-  type: SlotType;
   value: Interval;
+  tokens: string[];
 
-  constructor(name: string, instructions: string, type: SlotType) {
+  constructor(name: string, instructions: string) {
     this.name = name;
     this.instructions = instructions;
-    this.type = type;
     this.value = null;
+    this.tokens = [];
+  }
+
+  fill(value: Interval, tokens: string[]) {
+        const slot = new Slot(this.name, this.instructions)
+        slot.value = value
+        slot.tokens = tokens
+        return slot
   }
 }
 
 export class Frame {
   name: string;
-  slots: Set<Slot>;
+  slots: Slot[];
 
   constructor(name: string, slots: Slot[]) {
     this.name = name;
-    this.slots = new Set(slots);
+    this.slots = slots;
   }
 
   freeSlots(): Slot[] {
-    return [...this.slots].filter((s: Slot) => (s.value == null))
+    return this.slots.filter((s: Slot) => (s.value == null))
   }
 }
 
@@ -71,7 +71,7 @@ export class Document {
     this.emptyFrames = frames;
     this.filledFrames = [];
   } 
-  
+
   tokens() {
     return this.document;
   }
@@ -86,7 +86,7 @@ export class Document {
 
   currentSlot(): Slot {
     var frame = this.currentFrame();
-    var slot: Slot = [...frame.slots].find((s: Slot) => (s.value == null))
+    var slot: Slot = frame.slots.find((s: Slot) => (s.value == null))
     if (!slot && this.emptyFrames.length > 0) {
       this.filledFrames.push(this.emptyFrames.shift());
       return this.currentSlot();
@@ -101,12 +101,15 @@ export class Document {
   saveSlot(selected: Array<SelectedItem>) {
     const s: Slot = this.currentSlot();
     if (s) {
-      const slots = selected.filter((si: SelectedItem) => (si.tag == s.type)).map((si: SelectedItem) => ({...s, value: { start: si.start, end: si.end } }));
-      console.log(selected);
+      const slots = selected.map((si: SelectedItem) => s.fill({ start: si.start, end: si.end }, si.tokens));
       const filledNames = new Set<string>(slots.map( (s: Slot) => s.name))
       const frame = this.currentFrame();
-      frame.slots = new Set([...frame.slots].filter((s: Slot) => !filledNames.has(s.name)).concat(slots))
-    }
+      frame.slots = frame.slots.filter((s: Slot) => !filledNames.has(s.name)).concat(slots)
+    } 
+    this.currentSlot();
+    if (this.filledFrames.length > 0 && this.emptyFrames.length == 0) {
+      sendDocument(this)
+    } 
     return this;
   }
 }
@@ -150,7 +153,7 @@ const newDocumentToken: ActionCreator<DocumentLoadedAction> = (document: Documen
   document: document
 });
 
-const slotFilledChanged: ActionCreator<SlotFilledAction> = (tag: SlotType) => ({
+const slotFilledChanged: ActionCreator<SlotFilledAction> = () => ({
   type: '@@document/SLOT_FILLED'
 });
 

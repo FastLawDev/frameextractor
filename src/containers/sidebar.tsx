@@ -17,7 +17,7 @@ interface Handlers {
 
 const ControlPanel: React.SFC<Props & Handlers> = (props: (Props & Handlers)) => (
   <div className="jumbotron sidebar">
-    <h1 className="display-4">Понятие: {props.frameName}</h1>
+    <h1 className="display-4">{props.frameName}</h1>
     <ul className="lead">{props.instructions.map((i: string) => (<li key={i}>{i}</li>))}</ul>
     <hr className="my-4"></hr>
     <button type="button" className={"btn btn-primary" + (props.isDisabled ? ' disabled' : '')} onClick={props.handler}>Ок</button>

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
-import { State, SlotType, DocumentActions, SelectedItem } from 'store';
+import { State, DocumentActions, SelectedItem } from 'store';
 import { TokenAnnotator } from 'components/annotator';
 import './documentView.scss';
 
@@ -26,12 +26,6 @@ function randomColor(): string {
   return color;
 }
 
-var TAG_COLORS: { [id: string]: string } = {} 
-Object.keys(SlotType).filter(k => typeof SlotType[k as any] === "string")
-  .forEach(key => {
-    TAG_COLORS[key] = randomColor()
-  })
-
 // You can now safely use the mapped state as our component props!
 const DocumentView: React.SFC<Props & Handlers> = (props: (Props & Handlers)) => (
   <div className="documentView">
@@ -43,7 +37,7 @@ const DocumentView: React.SFC<Props & Handlers> = (props: (Props & Handlers)) =>
                   getSpan={span => ({
                           ...span,
                           tag: props.currentTag,
-                          color: TAG_COLORS[props.currentTag],
+                          color: randomColor(),
                   })}
           />
   </div>
@@ -52,9 +46,9 @@ const DocumentView: React.SFC<Props & Handlers> = (props: (Props & Handlers)) =>
 const mapStateToProps = (state: State): Props => { 
   const slot = state.document.currentSlot();
   if (slot) {
-    return { tokens: state.document.tokens(), selected: state.selected, currentTag: slot.type }
+    return { tokens: state.document.tokens(), selected: state.selected, currentTag: '' }
   } else {
-    return { tokens: [], selected: [], currentTag: SlotType.ORG }
+    return { tokens: [], selected: [], currentTag: '' }
   }
 }
 
