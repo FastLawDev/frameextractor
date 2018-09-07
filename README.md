@@ -4,7 +4,7 @@
 
 ## Как работать
 
-Запустить `cat document.txt | ./srver.py` и на выходе будет json с разметкой
+Запустить `cat document.txt | ./srver.py`, открыть [http://localhost:5000](http://localhost:5000) и на выходе будет json с разметкой
 
 ## Как размечать не юридические документы 
 
