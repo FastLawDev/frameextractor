@@ -19,7 +19,7 @@ const Mark: React.SFC<MarkProps> = props => (
   >
     {props.content}
     {props.tag && (
-      <span style={{fontSize: '0.7em', fontWeight: 500, marginLeft: 6}}>{props.tag}</span>
+      <span className='badge'>{props.tag}</span>
     )}
   </mark>
 )

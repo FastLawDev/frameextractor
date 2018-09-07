@@ -15,10 +15,9 @@ const Token: React.SFC<TokenProps> = props => {
 
 export interface TokenAnnotatorProps {
   style: object
-  pageNum: number;
   tokens: string[]
   value: any[]
-  onChange: (k: number, d: any) => any
+  onChange: (d: any) => any
   getSpan?: (_: any) => any
   renderMark?: (props: MarkProps) => JSX.Element
   // determine whether to overwrite or leave intersecting ranges.
@@ -70,7 +69,7 @@ class TokenAnnotator extends React.Component<TokenAnnotatorProps, {}> {
 
     end += 1
 
-    this.props.onChange(this.props.pageNum, [
+    this.props.onChange([
       ...this.props.value,
       this.getSpan({start, end, tokens: this.props.tokens.slice(start, end)}),
     ])
@@ -81,7 +80,7 @@ class TokenAnnotator extends React.Component<TokenAnnotatorProps, {}> {
     // Find and remove the matching split.
     const splitIndex = this.props.value.findIndex(s => s.start === start && s.end === end)
     if (splitIndex >= 0) {
-      this.props.onChange(this.props.pageNum, [
+      this.props.onChange([
         ...this.props.value.slice(0, splitIndex),
         ...this.props.value.slice(splitIndex + 1),
       ])
@@ -97,10 +96,12 @@ class TokenAnnotator extends React.Component<TokenAnnotatorProps, {}> {
     const {tokens, value, style, renderMark} = this.props
     const splits = splitTokensWithOffsets(tokens, value)
     return (
-      <p style={style} ref={this.rootRef}>
+      <div style={style} ref={this.rootRef}>
         {splits.map(
-          (split: any, i: number) =>
-            split.mark ? (
+          (split: any, i: number) => {
+            const res: JSX.Element[] = []
+
+            res.push(split.mark ? (
               renderMark({
                 key: `${uuid()}`,
                 ...split,
@@ -108,9 +109,11 @@ class TokenAnnotator extends React.Component<TokenAnnotatorProps, {}> {
               })
             ) : (
               <Token key={split.i} {...split} />
-            )
+            ))
+            return res
+          }
         )}
-      </p>
+      </div>
     )
   }
 }
