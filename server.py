@@ -51,7 +51,7 @@ writer = csv.writer(sys.stdout, quoting=csv.QUOTE_NONNUMERIC)
 reader = csv.reader(iter(sys.stdin.readline, ''))
 
 def next_doc():
-    row = ['dsfdsfdsfds ewre rewrewr'] #next(reader)
+    row = next(reader)
     if row:
         txt = row[0]
         doc = Document(txt, work_contract_frames)
