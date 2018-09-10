@@ -4,7 +4,7 @@
 
 Как работать:
 
- - запустить `cat document.txt | ./srver.py`
+ - запустить `cat document.txt | ./server.py`
  - открыть [http://localhost:5000](http://localhost:5000) 
  - разметить
  - на выходе будет json с разметкой
