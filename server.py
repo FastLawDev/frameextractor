@@ -51,13 +51,10 @@ writer = csv.writer(sys.stdout, quoting=csv.QUOTE_NONNUMERIC)
 reader = csv.reader(iter(sys.stdin.readline, ''))
 
 def next_doc():
-    row = next(reader)
-    if row:
+    for row in reader:
         txt = row[0]
         doc = Document(txt, work_contract_frames)
         emit('new-document', doc.toJSON())
-    else:
-        emit('finish')
 
 @socketio.on('init')
 def next_document():
